@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "785492804675",
+    "firebase_url": "https://redrevolution-f5082.firebaseio.com",
+    "project_id": "redrevolution-f5082",
+    "storage_bucket": "redrevolution-f5082.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785492804675:android:3d347cf99dd729fb",
+        "android_client_info": {
+          "package_name": "com.example.rahulraj.red_revolution"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785492804675-e6ojvkbf46dgf7u8l55fld6qe9mt8i58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rahulraj.red_revolution",
+            "certificate_hash": "6190e16558cedca371651dca12e17f4300e727d3"
+          }
+        },
+        {
+          "client_id": "785492804675-jsj3ci54vc9skd6pko1m80anf226dnm7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUbqR_SaxZJj2I097cgjTrnH8b8ea164Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785492804675-jsj3ci54vc9skd6pko1m80anf226dnm7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
