@@ -254,8 +254,7 @@
                 android:id="@+id/generate_otp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/otp"
-                android:layout_toRightOf="@+id/otp"
+                android:layout_below="@+id/otp"
                 android:text="@string/VerifyOTP" />
         </RelativeLayout>
 
@@ -280,7 +279,6 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             app:srcCompat="@drawable/nexticon" />
-
     </LinearLayout>
 
 
