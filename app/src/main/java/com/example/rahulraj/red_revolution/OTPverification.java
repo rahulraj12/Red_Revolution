@@ -168,7 +168,7 @@ public class OTPverification extends AppCompatActivity {
 
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
-                    Toast.makeText(OTPverification.this, "Limit exceeded", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OTPverification.this, "Too many requests please try later", Toast.LENGTH_SHORT).show();
                 }
 
                 // Show a message and update the UI
