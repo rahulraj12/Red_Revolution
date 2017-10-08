@@ -52,6 +52,9 @@ public class SignUp extends AppCompatActivity {
         generateOtp = (FloatingActionButton) findViewById(R.id.fab);
         Button verifyotp = (Button) findViewById(R.id.generate_otp);
 
+
+       // FirebaseApp.initializeApp(this);
+
         callback_verificvation();
         mAuth = FirebaseAuth.getInstance();
 
@@ -88,6 +91,7 @@ public class SignUp extends AppCompatActivity {
 
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential) {
+
         mAuth.signInWithCredential(phoneAuthCredential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
