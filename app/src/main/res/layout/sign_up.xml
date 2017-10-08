@@ -233,37 +233,6 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/editText33"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/PhoneNumber"
-                android:inputType="phone" />
-        </android.support.design.widget.TextInputLayout>
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/otp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/EnterOTP" />
-
-            <Button
-                android:id="@+id/generate_otp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/otp"
-                android:text="@string/VerifyOTP" />
-        </RelativeLayout>
-
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
                 android:id="@+id/editText37"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
