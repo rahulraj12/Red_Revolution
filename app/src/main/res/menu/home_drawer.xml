@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+    </group>
+
+    <item android:title="Welcome">
+        <menu>
+            <item
+                android:id="@+id/certs"
+                android:icon="@mipmap/ic_certi"
+                android:title="@string/Certificates" />
+            <item
+                android:id="@+id/faq"
+                android:icon="@mipmap/ic_faq"
+                android:title="@string/FAQs" />
+            <item
+                android:id="@+id/about"
+                android:icon="@mipmap/ic_about"
+                android:title="@string/About" />
+            <item
+                android:id="@+id/credits"
+                android:icon="@mipmap/ic_credit"
+                android:title="@string/Credits" />
+        </menu>
+    </item>
+
+</menu>

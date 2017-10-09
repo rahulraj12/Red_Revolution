@@ -129,4 +129,5 @@
     <string name="sms_sent_donor">SMS has been sent to donor</string>
 
     <string name="enter_bloodgroup">Enter blood group</string>
+    <string name="title_activity_home">Home</string>
 </resources>
