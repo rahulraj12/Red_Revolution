@@ -1,6 +1,7 @@
 package com.example.rahulraj.red_revolution;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,12 +18,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Login extends AppCompatActivity {
+    RequestQueue requestQueue;
+    String lat, lng, url = "https://data.gov.in/node/356981/datastore/export/json",JSON;
     Button signup,login;
     Double d1,d2;
     FirebaseAuth firebaseAuth;
@@ -55,6 +65,7 @@ public class Login extends AppCompatActivity {
         forgot= (TextView) findViewById(R.id.forgot);
         login= (Button) findViewById(R.id.button9);
         signup= (Button) findViewById(R.id.signup);
+        requestQueue = Volley.newRequestQueue(this);
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +124,18 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                JSON=s;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        requestQueue.add(stringRequest);
     }
     private void startNextActivity(){
         new com.example.rahulraj.red_revolution.location.LocationCaptureTask(this){
@@ -123,6 +146,14 @@ public class Login extends AppCompatActivity {
                     d2 = location.getLongitude();
                     Intent intent=new Intent(Login.this,SignUp.class);
                     startActivity(intent);
+                    lat = Double.toString(d1);
+                    lng = Double.toString(d2);
+                    SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putString("Latitude", lat);
+                    editor.putString("Longitude", lng);
+                    editor.putString("JSON", JSON);
+                    editor.commit();
 
                 } else{
                     Toast.makeText(Login.this,R.string.LocationError,Toast.LENGTH_SHORT).show();
