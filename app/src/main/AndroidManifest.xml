@@ -26,7 +26,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignUp" />
-        <activity android:name=".OTPverification" />
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home"
@@ -78,9 +77,6 @@
             android:exported="false" />
 
         <receiver android:name=".alarm.PowerButtonReceiver" />
-
-        <activity android:name=".PhoneVerificaiton" />
-        <activity android:name=".PhoneAuthentication" />
         <activity android:name=".Authentication"></activity>
     </application>
 
