@@ -245,7 +245,7 @@ public class SignUp extends AppCompatActivity {
                             e.putString("password",Password);
                             e.putString("will_of_donor",Will_of_donor);
                             e.commit();
-                            Intent intent = new Intent(SignUp.this, OTPverification.class);
+                            Intent intent = new Intent(SignUp.this, OTP.class);
                             startActivity(intent);
                             finish();
                         } else {
