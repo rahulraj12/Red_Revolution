@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:orientation="vertical"
+
+    tools:showIn="@layout/activity_add_certificate">
+
+    <TextView
+        android:layout_gravity="top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Here's our token of appreciation for you! Share this certifcate with your friends and encourage them to donate blood."
+        android:id="@+id/toggleButton"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/holder"></LinearLayout>
+    <!--<EditText-->
+        <!--android:background="@drawable/blood_img_small"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:text=""-->
+        <!--android:gravity="center"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/toggleButton"-->
+        <!--android:id="@+id/img"/>-->
+</LinearLayout>

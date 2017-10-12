@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -43,7 +46,40 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".BloodbankList"></activity>
+        <activity android:name=".BloodbankList" />
+        <activity android:name=".ResetPassword"></activity>
+
+
+        <receiver
+            android:name=".alarm.AlarmReceiver"
+            android:process=":remote" />
+
+        <activity
+            android:name=".alarm.DonationReminderActivity"
+            android:label="@string/title_activity_donation_reminder"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".alarm.DonationDateActivity"
+            android:label="@string/title_activity_donation_date"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".alarm.AddCertificateActivity"
+            android:label="@string/title_activity_add_certificate"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <receiver android:name=".alarm.VolumeReceiver">
+            <intent-filter>
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".alarm.MyService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver android:name=".alarm.PowerButtonReceiver" />
+
     </application>
 
 </manifest>

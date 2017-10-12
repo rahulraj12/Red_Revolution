@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "785492804675-h70ih0g1e87b4jfhlb3tbq8sa6vtlc0h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rahulraj.red_revolution",
+            "certificate_hash": "945f74deb4f1036c83c62ecd1e4d65277d1327e8"
+          }
+        },
+        {
           "client_id": "785492804675-e6ojvkbf46dgf7u8l55fld6qe9mt8i58.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -230,7 +230,8 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/textInputLayout">
 
             <EditText
                 android:id="@+id/editText37"
@@ -240,6 +241,12 @@
                 android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:visibility="gone"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

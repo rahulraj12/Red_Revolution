@@ -2,13 +2,23 @@ package com.example.rahulraj.red_revolution;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,8 +29,14 @@ public class SignUp extends AppCompatActivity {
     EditText name,dob,address,city,district,state,pin,phone,emergency_contact1,emergency_contact2,
             blood_group,height,weight,last_blood_donation,last_platete_donation,email,password;
     String Name,Dob,Address,City,District,State,Pin,Phone,Emergency_contact1,Emergency_contact2,
-            Blood_group,Height,Weight,Last_blood_donation,Last_platete_donation,Email,Password,will_of_donor;
+            Blood_group,Height,Weight,Last_blood_donation,Last_platete_donation,Email,Password,Will_of_donor;
     RadioButton radioButton1,radioButton2;
+    FirebaseAuth mAuth;
+    FirebaseAuth.AuthStateListener mAuthListener;
+    boolean hasRegistered;
+    SharedPreferences sharedPreferences,sharedPreferences1;
+    ProgressBar progressBar;
+
 
 
     Calendar myCalendar = Calendar.getInstance();
@@ -74,44 +90,64 @@ public class SignUp extends AppCompatActivity {
         last_platete_donation = (EditText) findViewById(R.id.editText32);
         radioButton1 = (RadioButton) findViewById(R.id.radioButton);
         radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
-        phone = (EditText) findViewById(R.id.editText33);
+        //phone = (EditText) findViewById(R.id.editText33);
         emergency_contact1 = (EditText) findViewById(R.id.editText34);
         emergency_contact2 = (EditText) findViewById(R.id.editText35);
         email = (EditText) findViewById(R.id.editText36);
         password = (EditText) findViewById(R.id.editText37);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    sendVerificationEmail();
+                }
+            }
+        };
 
         next = (FloatingActionButton) findViewById(R.id.fab);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Name = name.getText().toString();
-                Dob = dob.getText().toString();
-                Address = address.getText().toString();
-                City = city.getText().toString();
-                District = district.getText().toString();
-                State = state.getText().toString();
-                Pin = pin.getText().toString();
-                Blood_group = blood_group.getText().toString();
-                Height = height.getText().toString();
-                Weight = weight.getText().toString();
-                Last_blood_donation = last_blood_donation.getText().toString();
-                Last_platete_donation = last_platete_donation.getText().toString();
-                Phone = phone.getText().toString();
-                Emergency_contact1 = emergency_contact1.getText().toString();
-                Emergency_contact2 = emergency_contact2.getText().toString();
-                Email = email.getText().toString();
-                Password = password.getText().toString();
-                Intent intent = new Intent(SignUp.this, OTPverification.class);
-                intent.putExtra("name",Name);
-                intent.putExtra("dob",Dob);
-                intent.putExtra("address",Address);
-                intent.putExtra("city",City);
-                intent.putExtra("district",District);
-                intent.putExtra("state",State);
-                intent.putExtra("pin",Pin);
-                intent.putExtra("blood_group",Blood_group);
-                intent.putExtra("height",Height);
-                startActivity(intent);
+                progressBar.setVisibility(View.VISIBLE);
+                Name = name.getText().toString().trim();
+                Dob = dob.getText().toString().trim();
+                Address = address.getText().toString().trim();
+                City = city.getText().toString().trim();
+                District = district.getText().toString().trim();
+                State = state.getText().toString().trim();
+                Pin = pin.getText().toString().trim();
+                Blood_group = blood_group.getText().toString().trim();
+                Height = height.getText().toString().trim();
+                Weight = weight.getText().toString().trim();
+                Last_blood_donation = last_blood_donation.getText().toString().trim();
+                Last_platete_donation = last_platete_donation.getText().toString().trim();
+          //      Phone = phone.getText().toString();
+                Emergency_contact1 = emergency_contact1.getText().toString().trim();
+                Emergency_contact2 = emergency_contact2.getText().toString().trim();
+                Email = email.getText().toString().trim();
+                Password = password.getText().toString().trim();
+
+                sharedPreferences1 = getSharedPreferences("User_details", 0);
+                SharedPreferences.Editor e1 = sharedPreferences1.edit();
+                e1.putString("1", Email);
+                e1.commit();
+                mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(SignUp.this, "Sign up unsuccessful", Toast.LENGTH_SHORT).show();
+                        } else {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(SignUp.this, "Successfully created account", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
 
@@ -135,15 +171,26 @@ public class SignUp extends AppCompatActivity {
         radioButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                will_of_donor = getResources().getString(R.string.YES);
+                Will_of_donor = getResources().getString(R.string.YES);
             }
         });
         radioButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                will_of_donor = getResources().getString(R.string.NO);
+                Will_of_donor = getResources().getString(R.string.NO);
             }
         });
+    }
+
+
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    public void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(mAuthListener);
     }
 
     private void updateLabel() {
@@ -161,5 +208,56 @@ public class SignUp extends AppCompatActivity {
 
 
         last_platete_donation.setText(sdf.format(myCalendar1.getTime()));
+    }
+
+
+    private void sendVerificationEmail() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // email sent
+                            Toast.makeText(SignUp.this, "Verification link sent to your mail", Toast.LENGTH_SHORT).show();
+                            // after email is sent just logout the user and finish this activity
+                            FirebaseAuth.getInstance().signOut();
+                            hasRegistered=true;
+                            sharedPreferences = getSharedPreferences("IDvalue", 0);
+                            SharedPreferences.Editor e=sharedPreferences.edit();
+                            e.putBoolean("hasRegstered",hasRegistered);
+                            e.putString("name",Name);
+                            e.putString("dob",Dob);
+                            e.putString("address",Address);
+                            e.putString("city",City);
+                            e.putString("district",District);
+                            e.putString("state",State);
+                            e.putString("pin",Pin);
+                            e.putString("blood_group",Blood_group);
+                            e.putString("height",Height);
+                            e.putString("weight",Weight);
+                            e.putString("last_blood_donation",Last_blood_donation);
+                            e.putString("last_platelet_donation",Last_platete_donation);
+                            e.putString("emergency_contact",Emergency_contact1);
+                            e.putString("emergency_contact1",Emergency_contact2);
+                            e.putString("email",Email);
+                            e.putString("password",Password);
+                            e.putString("will_of_donor",Will_of_donor);
+                            e.commit();
+                            Intent intent = new Intent(SignUp.this, OTPverification.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // email not sent, so display message and restart the activity or do whatever you wish to do
+                            //restart this activity
+                            overridePendingTransition(0, 0);
+                            finish();
+                            overridePendingTransition(0, 0);
+                            startActivity(getIntent());
+
+                        }
+                    }
+                });
     }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_donation_reminder">
+    <TextView
+        android:id="@+id/txt"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="It's been 3 months since your last blood donation! With every donation you help 3 people. We request you to donate blood. If you have already donated, let us know. We will remind you next time."/>
+
+    <Button
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I have donated"
+        android:id="@+id/donated"/>
+    <Button
+        android:layout_above="@+id/donated"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I pledge to donate soon"
+        android:id="@+id/pledge"/>
+</RelativeLayout>

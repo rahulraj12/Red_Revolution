@@ -1,7 +1,9 @@
 package com.example.rahulraj.red_revolution;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -11,10 +13,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.rahulraj.red_revolution.alarm.AlarmReceiver;
+import com.example.rahulraj.red_revolution.alarm.DonationDateActivity;
+import com.example.rahulraj.red_revolution.alarm.MyService;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -53,6 +64,10 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setAlarm(this);
+        Intent i = new Intent(this, MyService.class);
+        startService(i);
     }
 
     @Override
@@ -94,6 +109,8 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.certs) {
+            Intent intent = new Intent(Home.this, DonationDateActivity.class);
+            startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.faq) {
 
@@ -107,4 +124,31 @@ public class Home extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public static void setAlarm(Context context) {
+        try {
+            Intent intent = new Intent();
+            Log.d(TAG, "Setting alarm");
+            intent.setClass(context, AlarmReceiver.class);
+            intent.putExtra("alarm_msg", "SHOW_NOTIFICATION");
+            PendingIntent sender = PendingIntent.getBroadcast(context, 123456, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+            long alarmInterval = AlarmManager.INTERVAL_HOUR;
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.add(Calendar.HOUR_OF_DAY, 1);
+            calendar.set(Calendar.SECOND, 0);
+            SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
+            Log.d(TAG, "next alarmtime=" + format.format(new Date(calendar.getTimeInMillis())));
+            am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmInterval, sender);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    private static final String TAG = Home.class.getSimpleName();
 }
