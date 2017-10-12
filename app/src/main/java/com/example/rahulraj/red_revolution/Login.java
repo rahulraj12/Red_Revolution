@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -21,15 +22,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class Login extends AppCompatActivity {
-    RequestQueue requestQueue;
     String lat, lng, url = "https://data.gov.in/node/356981/datastore/export/json", JSON;
     Button signup, login;
     Double d1, d2;
@@ -63,8 +68,9 @@ public class Login extends AppCompatActivity {
         login = (Button) findViewById(R.id.button9);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         signup = (Button) findViewById(R.id.signup);
-        requestQueue = Volley.newRequestQueue(this);
-        mngaepermission();
+        managepermission();
+
+        getJSON();
 
         forgot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,6 +161,46 @@ public class Login extends AppCompatActivity {
 
     }
 
+    private void getJSON() {
+        class GetUrls extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected String doInBackground(String... params) {
+                String uri = params[0];
+                StringBuilder sb = new StringBuilder();
+                BufferedReader bufferedReader = null;
+                try {
+                    URL url = new URL(uri);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return sb.toString().trim();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                JSON=s;
+            }
+        }
+        GetUrls g = new GetUrls();
+        g.execute(url);
+    }
+
     private void startNextActivity() {
         new com.example.rahulraj.red_revolution.location.LocationCaptureTask(this) {
             @Override
@@ -162,8 +208,6 @@ public class Login extends AppCompatActivity {
                 if (location != null) {
                     d1 = location.getLatitude();
                     d2 = location.getLongitude();
-                    Intent intent = new Intent(Login.this, Home.class);
-                    startActivity(intent);
                     lat = Double.toString(d1);
                     lng = Double.toString(d2);
                     SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
@@ -172,7 +216,8 @@ public class Login extends AppCompatActivity {
                     editor.putString("Longitude", lng);
                     editor.putString("JSON", JSON);
                     editor.commit();
-
+                    Intent intent = new Intent(Login.this, Home.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(Login.this, R.string.LocationError, Toast.LENGTH_SHORT).show();
                 }
@@ -226,7 +271,7 @@ public class Login extends AppCompatActivity {
     }
 
 
-    private void mngaepermission() {
+    private void managepermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
 

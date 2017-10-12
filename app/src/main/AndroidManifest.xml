@@ -47,8 +47,7 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".BloodbankList" />
-        <activity android:name=".ResetPassword"></activity>
-
+        <activity android:name=".ResetPassword" />
 
         <receiver
             android:name=".alarm.AlarmReceiver"
@@ -61,11 +60,11 @@
         <activity
             android:name=".alarm.DonationDateActivity"
             android:label="@string/title_activity_donation_date"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".alarm.AddCertificateActivity"
             android:label="@string/title_activity_add_certificate"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver android:name=".alarm.VolumeReceiver">
             <intent-filter>
@@ -80,6 +79,9 @@
 
         <receiver android:name=".alarm.PowerButtonReceiver" />
 
+        <activity android:name=".PhoneVerificaiton" />
+        <activity android:name=".PhoneAuthentication" />
+        <activity android:name=".Authentication"></activity>
     </application>
 
 </manifest>
