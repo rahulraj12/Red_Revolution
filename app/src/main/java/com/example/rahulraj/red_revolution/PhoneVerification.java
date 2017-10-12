@@ -1,15 +1,25 @@
 package com.example.rahulraj.red_revolution;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -21,9 +31,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class OTPverification extends AppCompatActivity {
+public class PhoneVerification extends AppCompatActivity {
 
     static final String TAG = "PhoneAuthActivity";
     TextInputLayout text;
@@ -31,15 +47,54 @@ public class OTPverification extends AppCompatActivity {
     Button generateOtp, verifyOtp, resendOtp;
     FirebaseAuth mAuth;
     boolean mVerificationInProgress = false;
+    JSONArray jsonArray;
+    JSONObject jsonObject;
     String mVerificationId;
     PhoneAuthProvider.ForceResendingToken mResendToken;
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+    String url = "http://www.rahulraj47.esy.es/phoneverify.php", url1 = "http://www.rahulraj47.esy.es/checkverified.php", email;
+    RequestQueue requestQueue;
 
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.otpverification);
+
+        SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
+        email = mPrefs.getString("Email", "");
+        requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url1, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                try {
+                    jsonArray=new JSONArray(s);
+                    jsonObject=jsonArray.getJSONObject(0);
+                    String res=jsonObject.getString("Phone");
+                    if (!TextUtils.isEmpty(res)) {
+                        Toast.makeText(PhoneVerification.this, "Phone number already verified", Toast.LENGTH_SHORT).show();
+                        Intent intent=new Intent(PhoneVerification.this,Home.class);
+                        startActivity(intent);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Email", email);
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+
+        setContentView(R.layout.phone_verification);
 
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
@@ -52,7 +107,7 @@ public class OTPverification extends AppCompatActivity {
         verifyOtp = (Button) findViewById(R.id.verify_otp);
         resendOtp = (Button) findViewById(R.id.resend_otp);
 
-        callback_verificvation();
+        callback_verification();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -87,7 +142,7 @@ public class OTPverification extends AppCompatActivity {
         // [START start_phone_auth]
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,        // Phone number to verify
-                60,                 // Timeout duration
+                120,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
                 this,               // Activity (for callback binding)
                 mCallbacks);        // OnVerificationStateChangedCallbacks
@@ -107,7 +162,7 @@ public class OTPverification extends AppCompatActivity {
                                         PhoneAuthProvider.ForceResendingToken token) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,        // Phone number to verify
-                60,                 // Timeout duration
+                120,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
                 this,               // Activity (for callback binding)
                 mCallbacks,         // OnVerificationStateChangedCallbacks
@@ -122,7 +177,30 @@ public class OTPverification extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            Toast.makeText(OTPverification.this, "Sign up successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PhoneVerification.this, "Phone number verified successfully", Toast.LENGTH_SHORT).show();
+                            StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String s) {
+
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+
+                                }
+                            }) {
+                                @Override
+                                protected Map<String, String> getParams() throws AuthFailureError {
+                                    Map<String, String> params = new HashMap<String, String>();
+                                    params.put("Phone", phone.getText().toString());
+                                    params.put("Email",email);
+                                    return params;
+
+                                }
+                            };
+                            requestQueue.add(stringRequest);
+                            Intent intent = new Intent(PhoneVerification.this, Home.class);
+                            startActivity(intent);
                             FirebaseUser user = task.getResult().getUser();
 
                         } else {
@@ -139,7 +217,7 @@ public class OTPverification extends AppCompatActivity {
                 });
     }
 
-    void callback_verificvation() {
+    void callback_verification() {
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -151,8 +229,7 @@ public class OTPverification extends AppCompatActivity {
                 // 2 - Auto-retrieval. On some devices Google Play services can automatically
                 //     detect the incoming verification SMS and perform verificaiton without
                 //     user action.
-
-
+                Toast.makeText(PhoneVerification.this, "Instant verification feature requires no OTP", Toast.LENGTH_LONG).show();
                 signInWithPhoneAuthCredential(credential);
             }
 
@@ -163,12 +240,12 @@ public class OTPverification extends AppCompatActivity {
 
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                    Toast.makeText(OTPverification.this, "Invalid number", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PhoneVerification.this, "Invalid number", Toast.LENGTH_SHORT).show();
                     // Invalid request
 
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
-                    Toast.makeText(OTPverification.this, "Too many requests please try later", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PhoneVerification.this, "Too many requests please try later", Toast.LENGTH_SHORT).show();
                 }
 
                 // Show a message and update the UI
@@ -181,12 +258,10 @@ public class OTPverification extends AppCompatActivity {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                Toast.makeText(OTPverification.this, "OTP sent", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PhoneVerification.this, "OTP sent", Toast.LENGTH_SHORT).show();
                 // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
                 mResendToken = token;
-
-
             }
         };
     }

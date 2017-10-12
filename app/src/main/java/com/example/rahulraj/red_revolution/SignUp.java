@@ -18,8 +18,7 @@ public class SignUp extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignUp.this, OTPverification.class);
-                startActivity(intent);
+
             }
         });
     }

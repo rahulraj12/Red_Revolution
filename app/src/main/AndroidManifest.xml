@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignUp" />
-        <activity android:name=".OTPverification" />
+        <activity android:name=".PhoneVerification" />
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home"

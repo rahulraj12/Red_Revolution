@@ -1,15 +1,18 @@
 package com.example.rahulraj.red_revolution;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -18,27 +21,35 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.rahulraj.red_revolution.location.LocationCaptureTask;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class Login extends AppCompatActivity {
     Button signup, login;
+    EditText email;
     Double d1, d2;
-    RequestQueue requestQueue;
-    String lat, lng, url = "https://data.gov.in/node/356981/datastore/export/json",JSON;
+    String lat, lng, url = "https://data.gov.in/node/3287321/datastore/export/json",JSON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        requestQueue = Volley.newRequestQueue(this);
         signup = (Button) findViewById(R.id.signup);
         login = (Button) findViewById(R.id.button9);
+        email= (EditText) findViewById(R.id.editText);
 
+        getJSON();
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Login.this, Home.class);
-                startActivity(intent);
+                startNextActivity();
             }
         });
 
@@ -59,23 +70,50 @@ public class Login extends AppCompatActivity {
 
             }
         });
+    }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+    private void getJSON() {
+        class GetUrls extends AsyncTask<String, Void, String> {
+
             @Override
-            public void onResponse(String s) {
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected String doInBackground(String... params) {
+                String uri = params[0];
+                StringBuilder sb = new StringBuilder();
+                BufferedReader bufferedReader = null;
+                try {
+                    URL url = new URL(uri);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return sb.toString().trim();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
                 JSON=s;
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        });
-        requestQueue.add(stringRequest);
+        }
+        GetUrls g = new GetUrls();
+        g.execute(url);
     }
 
     private void startNextActivity() {
-        new com.example.rahulraj.red_revolution.location.LocationCaptureTask(this) {
+        new LocationCaptureTask(this) {
             @Override
             public void afterLocationCapture(Location location) {
                 if (location != null) {
@@ -88,8 +126,10 @@ public class Login extends AppCompatActivity {
                     editor.putString("Latitude", lat);
                     editor.putString("Longitude", lng);
                     editor.putString("JSON", JSON);
+                    editor.putString("Email",email.getText().toString());
                     editor.commit();
-
+                    Intent intent = new Intent(Login.this, Home.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(Login.this, R.string.LocationError, Toast.LENGTH_SHORT).show();
                 }

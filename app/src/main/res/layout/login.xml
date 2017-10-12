@@ -29,7 +29,7 @@
         android:inputType="textEmailAddress"
         android:maxLines="1"
         android:singleLine="true"
-        android:text="mr011@gmail.com" />
+        android:text="rrhhll99@gmail.com" />
 
     <EditText
         android:id="@+id/editText2"
@@ -43,7 +43,7 @@
         android:inputType="textPassword"
         android:maxLines="1"
         android:singleLine="true"
-        android:text="manish1204" />
+        android:text="rumita" />
 
     <TextView
         android:id="@+id/forgot"

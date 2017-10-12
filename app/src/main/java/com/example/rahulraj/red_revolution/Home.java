@@ -1,7 +1,6 @@
 package com.example.rahulraj.red_revolution;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -46,7 +45,7 @@ public class Home extends AppCompatActivity
         donor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Home.this,BloodbankList.class);
+                Intent intent = new Intent(Home.this, BloodbankList.class);
                 startActivity(intent);
             }
         });
@@ -100,6 +99,13 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.about) {
 
         } else if (id == R.id.credits) {
+
+        } else if (id == R.id.phoneverification) {
+            Intent intent = new Intent(Home.this, PhoneVerification.class);
+            startActivity(intent);
+        } else if (id == R.id.resetpassword) {
+
+        } else if (id == R.id.logout) {
 
         }
 
