@@ -57,7 +57,7 @@ public class Home extends AppCompatActivity
         donor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Home.this,BloodbankList.class);
+                Intent intent = new Intent(Home.this, BloodbankList.class);
                 startActivity(intent);
             }
         });
@@ -117,6 +117,13 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.about) {
 
         } else if (id == R.id.credits) {
+
+        } else if (id == R.id.phoneverification) {
+            Intent intent = new Intent(Home.this, Authentication.class);
+            startActivity(intent);
+        } else if (id == R.id.resetpassword) {
+
+        } else if (id == R.id.logout) {
 
         }
 
