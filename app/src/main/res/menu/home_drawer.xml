@@ -12,14 +12,6 @@
                 android:icon="@drawable/certi"
                 android:title="@string/Certificates" />
             <item
-                android:id="@+id/faq"
-                android:icon="@drawable/faq"
-                android:title="@string/FAQs" />
-            <item
-                android:id="@+id/about"
-                android:icon="@drawable/about"
-                android:title="@string/About" />
-            <item
                 android:id="@+id/credits"
                 android:icon="@drawable/credits"
                 android:title="@string/Credits" />
@@ -28,9 +20,17 @@
                 android:icon="@drawable/otp"
                 android:title="Phone Verification" />
             <item
-                android:id="@+id/resetpassword"
-                android:icon="@drawable/reset"
-                android:title="Reset Password" />
+                android:id="@+id/updatepassword"
+                android:icon="@drawable/update"
+                android:title="Update Password" />
+            <item
+                android:id="@+id/faq"
+                android:icon="@drawable/faq"
+                android:title="@string/FAQs" />
+            <item
+                android:id="@+id/about"
+                android:icon="@drawable/about"
+                android:title="@string/About" />
             <item
                 android:id="@+id/logout"
                 android:icon="@drawable/logout"

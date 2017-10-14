@@ -195,18 +195,6 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/editText36"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/Email"
-                android:inputType="textEmailAddress" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
                 android:id="@+id/editText35"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,6 +203,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -228,25 +217,14 @@
                 />
         </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textInputLayout">
-
-            <EditText
-                android:id="@+id/editText37"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/Password"
-                android:inputType="textPassword" />
-        </android.support.design.widget.TextInputLayout>
-
         <ProgressBar
             android:id="@+id/progressBar"
-            android:visibility="gone"
+            style="?android:attr/progressBarStyle"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_gravity="center"/>
+            android:layout_above="@+id/textInputLayout"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

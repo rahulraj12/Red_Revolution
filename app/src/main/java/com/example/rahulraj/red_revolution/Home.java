@@ -4,7 +4,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -18,10 +21,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.rahulraj.red_revolution.alarm.AlarmReceiver;
 import com.example.rahulraj.red_revolution.alarm.DonationDateActivity;
 import com.example.rahulraj.red_revolution.alarm.MyService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,7 +35,10 @@ import java.util.Date;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    Button donor;
+    Button donor,acceptor;
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +61,45 @@ public class Home extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        auth = FirebaseAuth.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null) {
+                    startActivity(new Intent(Home.this, Login.class));
+                    finish();
+                }
+            }
+        };
 
         donor = (Button) findViewById(R.id.donor);
+        acceptor= (Button) findViewById(R.id.acceptor);
         donor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Home.this, BloodbankList.class);
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+
+                if (!isConnected) {
+                    Toast.makeText(Home.this, R.string.InternetError, Toast.LENGTH_SHORT).show();
+                    Intent i=new Intent(Home.this,Offline.class);
+                    startActivity(i); //to do back button handling
+
+                } else {
+                    Intent intent = new Intent(Home.this, BloodbankList.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        acceptor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(Home.this,AcceptorHome.class);
                 startActivity(intent);
             }
         });
@@ -113,18 +155,23 @@ public class Home extends AppCompatActivity
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.faq) {
+            Intent intent=new Intent(Home.this,FAQ.class);
+            startActivity(intent);
 
         } else if (id == R.id.about) {
+            Intent intent1=new Intent(Home.this,About.class);
+            startActivity(intent1);
 
         } else if (id == R.id.credits) {
 
         } else if (id == R.id.phoneverification) {
             Intent intent = new Intent(Home.this, Authentication.class);
             startActivity(intent);
-        } else if (id == R.id.resetpassword) {
-
+        } else if (id == R.id.updatepassword) {
+            Intent intent = new Intent(Home.this, UpdatePassword.class);
+            startActivity(intent);
         } else if (id == R.id.logout) {
-
+            auth.signOut();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -158,4 +205,18 @@ public class Home extends AppCompatActivity
 
     }
     private static final String TAG = Home.class.getSimpleName();
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authListener != null) {
+            auth.removeAuthStateListener(authListener);
+        }
+    }
 }

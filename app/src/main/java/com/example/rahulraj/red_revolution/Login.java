@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,9 +20,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rahulraj.red_revolution.location.LocationCaptureTask;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -33,49 +36,75 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 public class Login extends AppCompatActivity {
-    String lat, lng, url = "https://data.gov.in/node/356981/datastore/export/json", JSON;
     Button signup, login;
-    Double d1, d2;
-    FirebaseAuth firebaseAuth;
-    FirebaseAuth.AuthStateListener authStateListener;
     EditText email, password;
+    Double d1, d2;
+    String lat, lng, url = "https://data.gov.in/node/3287321/datastore/export/json", JSON, url1 = "http://www.rahulraj47.esy.es/donor.php";
     String Email;
+    FirebaseAuth firebaseAuth;
+    RadioButton radioButton, radioButton1;
     ProgressBar progressBar;
     TextView forgot;
+    FirebaseAuth.AuthStateListener authStateListener;
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 10;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() != null) {
-                    Intent intent = new Intent(Login.this, Home.class);
-                    startActivity(intent);
-                    finish();
+                    startNextActivity();
                 }
             }
         };
+
         setContentView(R.layout.login);
+
+        signup = (Button) findViewById(R.id.signup);
+        login = (Button) findViewById(R.id.button9);
         email = (EditText) findViewById(R.id.editText);
         password = (EditText) findViewById(R.id.editText2);
-        forgot = (TextView) findViewById(R.id.forgot);
-        login = (Button) findViewById(R.id.button9);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        signup = (Button) findViewById(R.id.signup);
+        radioButton = (RadioButton) findViewById(R.id.radioButton3);
+        radioButton1 = (RadioButton) findViewById(R.id.radioButton4);
+        forgot = (TextView) findViewById(R.id.forgot);
+        radioButton1.setChecked(true);
         managepermission();
 
         getJSON();
 
+        radioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Configuration config = new Configuration();
+                Locale locale = new Locale("hi");
+                config.locale = locale;
+                getResources().updateConfiguration(config, null);
+            }
+        });
+
+        radioButton1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Configuration config = new Configuration();
+                Locale locale = new Locale("en");
+                config.locale = locale;
+                getResources().updateConfiguration(config, null);
+            }
+        });
         forgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Login.this, SignUp.class);
+                Intent intent = new Intent(Login.this, ForgotPassword.class);
                 startActivity(intent);
             }
         });
@@ -92,7 +121,7 @@ public class Login extends AppCompatActivity {
                 if (!TextUtils.isEmpty(Email) && !TextUtils.isEmpty(Password)) {
                     progressBar.setVisibility(View.VISIBLE);
                     firebaseAuth.signInWithEmailAndPassword(Email, Password)
-                            .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     progressBar.setVisibility(View.GONE);
@@ -100,7 +129,7 @@ public class Login extends AppCompatActivity {
                                         if (Password.length() < 6) {
                                             password.setError("Password too short, enter minimum 6 characters.");
                                         } else {
-                                            Toast.makeText(Login.this, "Authentication failed, please check your email and password..", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(Login.this, R.string.auth, Toast.LENGTH_LONG).show();
                                         }
                                     } else {
                                         if ((ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -115,18 +144,16 @@ public class Login extends AppCompatActivity {
                                     }
                                 }
                             });
-                } else {
-                    Toast.makeText(Login.this, "Please enter email and password..", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
 
-
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences s1 = getSharedPreferences("User_details", 0);
-                String c = s1.getString("1", "");
+                SharedPreferences mPrefs = getSharedPreferences("User_details", 0);
+                String c = mPrefs.getString("1", "");
                 if (!"null".equalsIgnoreCase(c.trim()) && !TextUtils.isEmpty(c.trim())) {
                     AlertDialog.Builder dialogue = new AlertDialog.Builder(Login.this);
                     dialogue.setCancelable(false);
@@ -135,7 +162,7 @@ public class Login extends AppCompatActivity {
                     dialogue.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Login.this, OTPverification.class);
+                            Intent intent = new Intent(Login.this, VerifyMail.class);
                             startActivity(intent);
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -145,20 +172,19 @@ public class Login extends AppCompatActivity {
                             SharedPreferences.Editor e1 = sharedPreferences2.edit();
                             e1.putString("1", "null");
                             e1.commit();
-                            Intent intent = new Intent(Login.this, SignUp.class);
+                            Intent intent = new Intent(Login.this, Register.class);
                             startActivity(intent);
                         }
                     });
                     AlertDialog alertDialog = dialogue.create();
                     alertDialog.show();
                 } else {
-                    Intent intent = new Intent(Login.this, SignUp.class);
+                    Intent intent = new Intent(Login.this, Register.class);
                     startActivity(intent);
                 }
+
             }
         });
-
-
     }
 
     private void getJSON() {
@@ -194,7 +220,7 @@ public class Login extends AppCompatActivity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                JSON=s;
+                JSON = s;
             }
         }
         GetUrls g = new GetUrls();
@@ -202,7 +228,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void startNextActivity() {
-        new com.example.rahulraj.red_revolution.location.LocationCaptureTask(this) {
+        new LocationCaptureTask(this) {
             @Override
             public void afterLocationCapture(Location location) {
                 if (location != null) {
@@ -215,6 +241,7 @@ public class Login extends AppCompatActivity {
                     editor.putString("Latitude", lat);
                     editor.putString("Longitude", lng);
                     editor.putString("JSON", JSON);
+                    editor.putString("Email", email.getText().toString().trim());
                     editor.commit();
                     Intent intent = new Intent(Login.this, Home.class);
                     startActivity(intent);
@@ -225,6 +252,19 @@ public class Login extends AppCompatActivity {
         }.execute();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

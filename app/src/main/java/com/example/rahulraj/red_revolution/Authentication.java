@@ -69,7 +69,7 @@ public class Authentication extends AppCompatActivity {
                     jsonObject=jsonArray.getJSONObject(0);
                     String res=jsonObject.getString("Phone");
                     if (!TextUtils.isEmpty(res)) {
-                        Toast.makeText(Authentication.this, "Phone number already verified", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Authentication.this, R.string.already_verified_ph, Toast.LENGTH_SHORT).show();
                         Intent intent=new Intent(Authentication.this,Home.class);
                         startActivity(intent);
                     }

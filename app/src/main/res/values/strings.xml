@@ -58,7 +58,6 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="welcome">Welcome to\nBlood Bank</string>
     <string name="forgot">Forgot Password</string>
     <string name="sign_in_loading">Signing in. Please wait...</string>
     <string name="title_activity_donor_login">Sign Up</string>
@@ -127,7 +126,9 @@
     <string name="Password">Password</string>
     <string name="contact_donor">To protect donor privacy, donor contact details are not shared here. The donor will be contacted by the Red Revolution automated system on your behalf. The donor will get in touch with you if he is available to donate blood. Do you wish to contact the donor? </string>
     <string name="sms_sent_donor">SMS has been sent to donor</string>
-
+    <string name="Welcome">Welcome to Blood Bank</string>
     <string name="enter_bloodgroup">Enter blood group</string>
     <string name="title_activity_home">Home</string>
+    <string name="auth">Authentication failed, please check your email and password..</string>
+    <string name="already_verified_ph">Phone number already verified</string>
 </resources>

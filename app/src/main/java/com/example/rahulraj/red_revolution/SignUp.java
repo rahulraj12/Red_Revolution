@@ -93,8 +93,6 @@ public class SignUp extends AppCompatActivity {
         //phone = (EditText) findViewById(R.id.editText33);
         emergency_contact1 = (EditText) findViewById(R.id.editText34);
         emergency_contact2 = (EditText) findViewById(R.id.editText35);
-        email = (EditText) findViewById(R.id.editText36);
-        password = (EditText) findViewById(R.id.editText37);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mAuth = FirebaseAuth.getInstance();
@@ -108,6 +106,10 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         };
+
+        sharedPreferences = getSharedPreferences("User_details", 0);
+        Email = sharedPreferences.getString("Email", "");
+        Password = sharedPreferences.getString("Password", "");
 
         next = (FloatingActionButton) findViewById(R.id.fab);
         next.setOnClickListener(new View.OnClickListener() {
@@ -129,8 +131,7 @@ public class SignUp extends AppCompatActivity {
           //      Phone = phone.getText().toString();
                 Emergency_contact1 = emergency_contact1.getText().toString().trim();
                 Emergency_contact2 = emergency_contact2.getText().toString().trim();
-                Email = email.getText().toString().trim();
-                Password = password.getText().toString().trim();
+
 
                 sharedPreferences1 = getSharedPreferences("User_details", 0);
                 SharedPreferences.Editor e1 = sharedPreferences1.edit();
@@ -242,10 +243,9 @@ public class SignUp extends AppCompatActivity {
                             e.putString("emergency_contact",Emergency_contact1);
                             e.putString("emergency_contact1",Emergency_contact2);
                             e.putString("email",Email);
-                            e.putString("password",Password);
                             e.putString("will_of_donor",Will_of_donor);
                             e.commit();
-                            Intent intent = new Intent(SignUp.this, OTP.class);
+                            Intent intent = new Intent(SignUp.this, Login.class);
                             startActivity(intent);
                             finish();
                         } else {

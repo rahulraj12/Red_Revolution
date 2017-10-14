@@ -260,7 +260,7 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
                 result[0] /= 1000;
                 result[0] = Float.parseFloat(new DecimalFormat("####.##").format(result[0]));
 
-                if (city2.getText().toString().equals(bloodBankEntity[i].city)) {
+                if (city2.getText().toString().trim().equals(bloodBankEntity[i].city)) {
                     BloodBankEntity entity = new BloodBankEntity();
                     filteredBloodBankEntity[k] = entity;
                     filteredBloodBankEntity[k].dist = Float.toString(result[0]);
@@ -350,14 +350,14 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    Intent intent = new Intent(BloodbankList.this, Blood_bank_details.class);
-//                    intent.putExtra("Hospital", filteredBloodBankEntity[position].h_name);
-//                    intent.putExtra("Address", filteredBloodBankEntity[position].add);
-//                    intent.putExtra("City", filteredBloodBankEntity[position].city);
-//                    intent.putExtra("State", filteredBloodBankEntity[position].state);
-//                    intent.putExtra("Pincode", filteredBloodBankEntity[position].pincode);
-//                    intent.putExtra("Contact", filteredBloodBankEntity[position].contact);
-//                    startActivity(intent);
+                    Intent intent = new Intent(BloodbankList.this, BloodBankDetails.class);
+                    intent.putExtra("Hospital", filteredBloodBankEntity[position].h_name);
+                    intent.putExtra("Address", filteredBloodBankEntity[position].add);
+                    intent.putExtra("City", filteredBloodBankEntity[position].city);
+                    intent.putExtra("State", filteredBloodBankEntity[position].state);
+                    intent.putExtra("Pincode", filteredBloodBankEntity[position].pincode);
+                    intent.putExtra("Contact", filteredBloodBankEntity[position].contact);
+                    startActivity(intent);
                 }
             });
             return v;
