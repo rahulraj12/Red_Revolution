@@ -18,11 +18,11 @@
             <item
                 android:id="@+id/phoneverification"
                 android:icon="@drawable/otp"
-                android:title="Phone Verification" />
+                android:title="@string/phoneverification" />
             <item
                 android:id="@+id/updatepassword"
                 android:icon="@drawable/update"
-                android:title="Update Password" />
+                android:title="@string/updatepassword" />
             <item
                 android:id="@+id/faq"
                 android:icon="@drawable/faq"
@@ -34,7 +34,7 @@
             <item
                 android:id="@+id/logout"
                 android:icon="@drawable/logout"
-                android:title="Logout" />
+                android:title="@string/logout" />
         </menu>
     </item>
 

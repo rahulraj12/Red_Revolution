@@ -87,7 +87,11 @@
         <activity android:name=".VerifyMail" />
         <activity android:name=".DonorList" />
         <activity android:name=".AcceptorHome" />
-        <activity android:name=".BloodBankDetails"></activity>
+        <activity android:name=".BloodBankDetails" />
+        <activity android:name=".NoInternet" />
+        <activity android:name=".EmergencyHome" />
+        <activity android:name=".Hospital" />
+        <activity android:name=".HospitalDetails"></activity>
     </application>
 
 </manifest>

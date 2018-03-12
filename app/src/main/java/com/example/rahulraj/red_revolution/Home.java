@@ -35,14 +35,21 @@ import java.util.Date;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    Button donor,acceptor;
+    Button donor,acceptor,emergency;
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener;
+    CheckInternet c1;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        c1 = new CheckInternet(this);
+        boolean check = c1.checkInternet();
+        if (!check) {
+            Intent intent = new Intent(Home.this, NoInternet.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -76,6 +83,7 @@ public class Home extends AppCompatActivity
 
         donor = (Button) findViewById(R.id.donor);
         acceptor= (Button) findViewById(R.id.acceptor);
+        emergency= (Button) findViewById(R.id.emergency);
         donor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +108,13 @@ public class Home extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(Home.this,AcceptorHome.class);
+                startActivity(intent);
+            }
+        });
+        emergency.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(Home.this,EmergencyHome.class);
                 startActivity(intent);
             }
         });
@@ -171,7 +186,7 @@ public class Home extends AppCompatActivity
             Intent intent = new Intent(Home.this, UpdatePassword.class);
             startActivity(intent);
         } else if (id == R.id.logout) {
-            auth.signOut();
+                auth.signOut();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

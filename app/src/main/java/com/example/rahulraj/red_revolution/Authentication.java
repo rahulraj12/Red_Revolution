@@ -8,6 +8,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,44 +54,54 @@ public class Authentication extends AppCompatActivity {
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     String url = "http://www.rahulraj47.esy.es/phoneverify.php", url1 = "http://www.rahulraj47.esy.es/checkverified.php", email;
     RequestQueue requestQueue;
+    CheckInternet c1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
-        email = mPrefs.getString("Email", "");
-        requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url1, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                try {
-                    jsonArray=new JSONArray(s);
-                    jsonObject=jsonArray.getJSONObject(0);
-                    String res=jsonObject.getString("Phone");
-                    if (!TextUtils.isEmpty(res)) {
-                        Toast.makeText(Authentication.this, R.string.already_verified_ph, Toast.LENGTH_SHORT).show();
-                        Intent intent=new Intent(Authentication.this,Home.class);
-                        startActivity(intent);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        c1 = new CheckInternet(this);
+        boolean check = c1.checkInternet();
+        if (!check) {
+            Intent intent = new Intent(Authentication.this, NoInternet.class);
+            startActivity(intent);
+        }
+        else {
+            SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
+            email = mPrefs.getString("Email", "");
+            requestQueue = Volley.newRequestQueue(this);
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, url1, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    try {
+                        jsonArray = new JSONArray(s);
+                        jsonObject = jsonArray.getJSONObject(0);
+                        String res = jsonObject.getString("Phone");
+                        if (!TextUtils.isEmpty(res)) {
+                            Toast.makeText(Authentication.this, R.string.already_verified_ph, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(Authentication.this, Home.class);
+                            startActivity(intent);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Email", email);
-                return params;
-            }
-        };
-        requestQueue.add(stringRequest);
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Email", email);
+                    return params;
+                }
+            };
+            requestQueue.add(stringRequest);
+
+        }
 
         setContentView(R.layout.authentication);
 
@@ -112,26 +123,44 @@ public class Authentication extends AppCompatActivity {
         generateOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPhoneNumberVerification(phone.getText().toString());
-                text.setVisibility(View.GONE);
-                generateOtp.setVisibility(View.GONE);
-                otp.setVisibility(View.VISIBLE);
-                verifyOtp.setVisibility(View.VISIBLE);
-                resendOtp.setVisibility(View.VISIBLE);
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(Authentication.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    startPhoneNumberVerification(phone.getText().toString());
+                    text.setVisibility(View.GONE);
+                    generateOtp.setVisibility(View.GONE);
+                    otp.setVisibility(View.VISIBLE);
+                    verifyOtp.setVisibility(View.VISIBLE);
+                    resendOtp.setVisibility(View.VISIBLE);
+                }
             }
         });
 
         verifyOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verifyPhoneNumberWithCode(mVerificationId, otp.getText().toString());
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(Authentication.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    verifyPhoneNumberWithCode(mVerificationId, otp.getText().toString());
+                }
             }
         });
 
         resendOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resendVerificationCode(phone.getText().toString(), mResendToken);
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(Authentication.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    resendVerificationCode(phone.getText().toString(), mResendToken);
+                }
             }
         });
     }
@@ -262,5 +291,11 @@ public class Authentication extends AppCompatActivity {
                 mResendToken = token;
             }
         };
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

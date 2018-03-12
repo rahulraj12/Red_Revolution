@@ -39,7 +39,7 @@ import java.net.URL;
 import java.util.Locale;
 
 public class Login extends AppCompatActivity {
-    Button signup, login;
+    Button signup, login, emergency;
     EditText email, password;
     Double d1, d2;
     String lat, lng, url = "https://data.gov.in/node/3287321/datastore/export/json", JSON, url1 = "http://www.rahulraj47.esy.es/donor.php";
@@ -50,12 +50,18 @@ public class Login extends AppCompatActivity {
     TextView forgot;
     FirebaseAuth.AuthStateListener authStateListener;
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 10;
+    CheckInternet c1;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        c1 = new CheckInternet(this);
+        boolean check = c1.checkInternet();
+        if (!check) {
+            Intent intent = new Intent(Login.this, NoInternet.class);
+            startActivity(intent);
+        }
         firebaseAuth = FirebaseAuth.getInstance();
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -111,40 +117,46 @@ public class Login extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Email = email.getText().toString().trim();
-                View view = getCurrentFocus();
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-                final String Password = password.getText().toString().trim();
-                if (!TextUtils.isEmpty(Email) && !TextUtils.isEmpty(Password)) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    firebaseAuth.signInWithEmailAndPassword(Email, Password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    progressBar.setVisibility(View.GONE);
-                                    if (!task.isSuccessful()) {
-                                        if (Password.length() < 6) {
-                                            password.setError("Password too short, enter minimum 6 characters.");
+                boolean check = c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(Login.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    Email = email.getText().toString().trim();
+                    View view = getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                    final String Password = password.getText().toString().trim();
+                    if (!TextUtils.isEmpty(Email) && !TextUtils.isEmpty(Password)) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        firebaseAuth.signInWithEmailAndPassword(Email, Password)
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        progressBar.setVisibility(View.GONE);
+                                        if (!task.isSuccessful()) {
+                                            if (Password.length() < 6) {
+                                                password.setError("Password too short, enter minimum 6 characters.");
+                                            } else {
+                                                Toast.makeText(Login.this, R.string.auth, Toast.LENGTH_LONG).show();
+                                            }
                                         } else {
-                                            Toast.makeText(Login.this, R.string.auth, Toast.LENGTH_LONG).show();
-                                        }
-                                    } else {
-                                        if ((ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                                                != PackageManager.PERMISSION_GRANTED
-                                                && ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                                                != PackageManager.PERMISSION_GRANTED)) {
-                                            ActivityCompat.requestPermissions(Login.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                                                    android.Manifest.permission.ACCESS_FINE_LOCATION}, 100);
-                                        } else {
-                                            startNextActivity();
+                                            if ((ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                                    != PackageManager.PERMISSION_GRANTED
+                                                    && ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                                                    != PackageManager.PERMISSION_GRANTED)) {
+                                                ActivityCompat.requestPermissions(Login.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                                                        android.Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+                                            } else {
+                                                startNextActivity();
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
 
+                    }
                 }
             }
         });
@@ -152,37 +164,59 @@ public class Login extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences mPrefs = getSharedPreferences("User_details", 0);
-                String c = mPrefs.getString("1", "");
-                if (!"null".equalsIgnoreCase(c.trim()) && !TextUtils.isEmpty(c.trim())) {
-                    AlertDialog.Builder dialogue = new AlertDialog.Builder(Login.this);
-                    dialogue.setCancelable(false);
-                    dialogue.setTitle("Alert Dialog");
-                    dialogue.setMessage("Do you want to verify your email entered previously?");
-                    dialogue.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Login.this, VerifyMail.class);
-                            startActivity(intent);
-                        }
-                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            SharedPreferences sharedPreferences2 = getSharedPreferences("User_details", 0);
-                            SharedPreferences.Editor e1 = sharedPreferences2.edit();
-                            e1.putString("1", "null");
-                            e1.commit();
-                            Intent intent = new Intent(Login.this, Register.class);
-                            startActivity(intent);
-                        }
-                    });
-                    AlertDialog alertDialog = dialogue.create();
-                    alertDialog.show();
-                } else {
-                    Intent intent = new Intent(Login.this, Register.class);
+                boolean check = c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(Login.this, NoInternet.class);
                     startActivity(intent);
+                } else {
+                    SharedPreferences mPrefs = getSharedPreferences("User_details", 0);
+                    String c = mPrefs.getString("1", "");
+                    if (!"null".equalsIgnoreCase(c.trim()) && !TextUtils.isEmpty(c.trim())) {
+                        AlertDialog.Builder dialogue = new AlertDialog.Builder(Login.this);
+                        dialogue.setCancelable(false);
+                        dialogue.setTitle("Alert Dialog");
+                        dialogue.setMessage("Do you want to verify your email entered previously?");
+                        dialogue.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Login.this, VerifyMail.class);
+                                startActivity(intent);
+                            }
+                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences sharedPreferences2 = getSharedPreferences("User_details", 0);
+                                SharedPreferences.Editor e1 = sharedPreferences2.edit();
+                                e1.putString("1", "null");
+                                e1.commit();
+                                Intent intent = new Intent(Login.this, Register.class);
+                                startActivity(intent);
+                            }
+                        });
+                        AlertDialog alertDialog = dialogue.create();
+                        alertDialog.show();
+                    } else {
+                        Intent intent = new Intent(Login.this, Register.class);
+                        startActivity(intent);
+                    }
                 }
 
+            }
+        });
+
+        emergency= (Button) findViewById(R.id.emergency);
+        emergency.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ((ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(Login.this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED)) {
+                    ActivityCompat.requestPermissions(Login.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+                } else {
+                    startNextActivity1();
+                }
             }
         });
     }
@@ -244,6 +278,31 @@ public class Login extends AppCompatActivity {
                     editor.putString("Email", email.getText().toString().trim());
                     editor.commit();
                     Intent intent = new Intent(Login.this, Home.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(Login.this, R.string.LocationError, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
+    }
+
+    private void startNextActivity1() {
+        new LocationCaptureTask(this) {
+            @Override
+            public void afterLocationCapture(Location location) {
+                if (location != null) {
+                    d1 = location.getLatitude();
+                    d2 = location.getLongitude();
+                    lat = Double.toString(d1);
+                    lng = Double.toString(d2);
+                    SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putString("Latitude", lat);
+                    editor.putString("Longitude", lng);
+                    editor.putString("JSON", JSON);
+                    editor.putString("Email", email.getText().toString().trim());
+                    editor.commit();
+                    Intent intent = new Intent(Login.this, BloodbankList.class);
                     startActivity(intent);
                 } else {
                     Toast.makeText(Login.this, R.string.LocationError, Toast.LENGTH_SHORT).show();

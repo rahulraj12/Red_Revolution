@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -51,11 +52,21 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
     boolean flag = true;
     StringBuilder sb = new StringBuilder();
     boolean found = true;
+    CheckInternet c1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        c1 = new CheckInternet(this);
+        boolean check = c1.checkInternet();
+        if (!check) {
+            Intent intent = new Intent(BloodbankList.this, NoInternet.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.bloodbank_list);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
         currLati = Double.parseDouble(mPrefs.getString("Latitude", ""));
@@ -66,6 +77,7 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
         try {
             List<Address> myadd = geocoder.getFromLocation(currLati, currLongi, 10);
             Address address = myadd.get(0);
+
 
             for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                 sb.append(address.getAddressLine(i));
@@ -82,18 +94,24 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(BloodbankList.this, MapsActivity.class);
-                Double a, b;
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(BloodbankList.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    Intent i = new Intent(BloodbankList.this, MapsActivity.class);
+                    Double a, b;
 
-                a = Double.parseDouble(filteredBloodBankEntity[position].lati);
-                b = Double.parseDouble(filteredBloodBankEntity[position].longi);
-                i.putExtra("Latitude1", a);
-                i.putExtra("Longitude1", b);
-                i.putExtra("Latitude2", currLati);
-                i.putExtra("Longitude2", currLongi);
-                i.putExtra("BBEobject", bloodBankEntity);
-                i.putExtra("Length", j);
-                startActivity(i);
+                    a = Double.parseDouble(filteredBloodBankEntity[position].lati);
+                    b = Double.parseDouble(filteredBloodBankEntity[position].longi);
+                    i.putExtra("Latitude1", a);
+                    i.putExtra("Longitude1", b);
+                    i.putExtra("Latitude2", currLati);
+                    i.putExtra("Longitude2", currLongi);
+                    i.putExtra("BBEobject", bloodBankEntity);
+                    i.putExtra("Length", j);
+                    startActivity(i);
+                }
             }
         });
 
@@ -105,62 +123,75 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flag = false;
-                found=false;
-                j = 0;
-                k = 0;
-                getJSON();
-                spinner.setVisibility(View.GONE);
-                findViewById(R.id.textView8).setVisibility(View.GONE);
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(BloodbankList.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    flag = false;
+                    found = false;
+                    j = 0;
+                    k = 0;
+                    getJSON();
+                    spinner.setVisibility(View.GONE);
+                    findViewById(R.id.textView8).setVisibility(View.GONE);
+                }
             }
         });
 
         ((Button) findViewById(R.id.contactDonor)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
-                final String str = mPrefs.getString("k", "");
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(BloodbankList.this, NoInternet.class);
+                    startActivity(intent);
+                } else {
+                    SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
+                    final String str = mPrefs.getString("k", "");
 
-                new AlertDialog.Builder(BloodbankList.this).setTitle(getResources().getString(R.string.SendSMS))
-                        .setMessage(getResources().getString(R.string.SendEmergency))
-                        .setPositiveButton(getResources().getString(R.string.YES), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                if (str == null || str.length() < 10) {
-                                    AlertDialog alertDialog = new AlertDialog.Builder(BloodbankList.this).create();
-                                    final EditText input = new EditText(BloodbankList.this);
-                                    input.setHint(getResources().getString(R.string.MobileNumber));
-                                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            LinearLayout.LayoutParams.MATCH_PARENT);
-                                    input.setLayoutParams(lp);
-                                    alertDialog.setView(input);
-                                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.OK), new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            String number = input.getText().toString();
-                                            SmsManager smsManager = SmsManager.getDefault();
-                                            smsManager.sendTextMessage(number, null, "HELP!! I'm at address : " + sb, null, null);
-                                        }
-                                    });
-                                    alertDialog.show();
+                    new AlertDialog.Builder(BloodbankList.this).setTitle(getResources().getString(R.string.SendSMS))
+                            .setMessage(getResources().getString(R.string.SendEmergency))
+                            .setPositiveButton(getResources().getString(R.string.YES), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (str == null || str.length() < 10) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(BloodbankList.this).create();
+                                        final EditText input = new EditText(BloodbankList.this);
+                                        input.setHint(getResources().getString(R.string.MobileNumber));
+                                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                LinearLayout.LayoutParams.MATCH_PARENT);
+                                        input.setLayoutParams(lp);
+                                        alertDialog.setView(input);
+                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.OK), new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                String number = input.getText().toString();
+                                                SmsManager smsManager = SmsManager.getDefault();
+                                                smsManager.sendTextMessage(number, null, "HELP!! I'm at address : " + sb, null, null);
+                                            }
+                                        });
+                                        alertDialog.show();
 
 
-                                } else {
-                                    SmsManager smsManager = SmsManager.getDefault();
-                                    smsManager.sendTextMessage(str, null, "HELP!!" + sb, null, null);
+                                    } else {
+                                        SmsManager smsManager = SmsManager.getDefault();
+                                        smsManager.sendTextMessage(str, null, "HELP!!" + sb, null, null);
+                                    }
                                 }
-                            }
-                        })
-                        .setTitle(getResources().getString(R.string.SendSMS))
-                        .setMessage(getResources().getString(R.string.SendEmergency))
-                        .setNegativeButton(getResources().getString(R.string.NO), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        }).create().show();
+                            })
+                            .setTitle(getResources().getString(R.string.SendSMS))
+                            .setMessage(getResources().getString(R.string.SendEmergency))
+                            .setNegativeButton(getResources().getString(R.string.NO), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            }).create().show();
+                }
             }
         });
+
 
     }
 
@@ -350,17 +381,29 @@ public class BloodbankList extends AppCompatActivity implements AdapterView.OnIt
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(BloodbankList.this, BloodBankDetails.class);
-                    intent.putExtra("Hospital", filteredBloodBankEntity[position].h_name);
-                    intent.putExtra("Address", filteredBloodBankEntity[position].add);
-                    intent.putExtra("City", filteredBloodBankEntity[position].city);
-                    intent.putExtra("State", filteredBloodBankEntity[position].state);
-                    intent.putExtra("Pincode", filteredBloodBankEntity[position].pincode);
-                    intent.putExtra("Contact", filteredBloodBankEntity[position].contact);
-                    startActivity(intent);
+                    boolean check=c1.checkInternet();
+                    if (!check) {
+                        Intent intent = new Intent(BloodbankList.this, NoInternet.class);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(BloodbankList.this, BloodBankDetails.class);
+                        intent.putExtra("Hospital", filteredBloodBankEntity[position].h_name);
+                        intent.putExtra("Address", filteredBloodBankEntity[position].add);
+                        intent.putExtra("City", filteredBloodBankEntity[position].city);
+                        intent.putExtra("State", filteredBloodBankEntity[position].state);
+                        intent.putExtra("Pincode", filteredBloodBankEntity[position].pincode);
+                        intent.putExtra("Contact", filteredBloodBankEntity[position].contact);
+                        startActivity(intent);
+                    }
                 }
             });
             return v;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

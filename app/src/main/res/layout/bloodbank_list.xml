@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_bloodbank_list"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/activity_bloodbank_list"
+android:layout_width="match_parent"
+android:padding="8dp"
+android:layout_height="match_parent"
+tools:context="com.example.rahulraj.red_revolution.BloodbankList">
+
+
+<EditText
+    android:id="@+id/editText11"
     android:layout_width="match_parent"
-    android:padding="8dp"
-    android:layout_height="match_parent"
-    tools:context="com.example.rahulraj.red_revolution.BloodbankList">
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:layout_toLeftOf="@+id/button11"
+    android:hint="@string/SearchByCity"
+    android:inputType="textPersonName" />
+
+<Button
+    android:id="@+id/button11"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:background="@drawable/search"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true" />
 
 
-    <EditText
-        android:id="@+id/editText11"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/button11"
-        android:hint="@string/SearchByCity"
-        android:inputType="textPersonName" />
+<TextView
+    android:id="@+id/textView8"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/editText11"
+    android:textSize="17dp"
+    android:layout_centerHorizontal="true"
+    android:text="@string/Chooseyourdistance" />
 
-    <Button
-        android:id="@+id/button11"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/search"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+<Spinner
+    android:id="@+id/spinner"
+    android:layout_width="60dp"
+    android:layout_height="wrap_content"
+    android:layout_alignBottom="@+id/textView8"
+    android:layout_toEndOf="@+id/textView8"
+    android:layout_toRightOf="@+id/textView8"
+    android:gravity="center_vertical" />
 
-
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editText11"
-        android:textSize="17dp"
-        android:layout_centerHorizontal="true"
-        android:text="@string/Chooseyourdistance" />
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView8"
-        android:layout_toEndOf="@+id/textView8"
-        android:layout_toRightOf="@+id/textView8"
-        android:gravity="center_vertical" />
-
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/contactDonor"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView8"
-        android:layout_marginTop="20dp" />
+<ListView
+    android:id="@+id/listView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/contactDonor"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_below="@+id/textView8"
+    android:layout_marginTop="20dp" />
 
 
-    <Button
-        android:id="@+id/contactDonor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/buttondesign1"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="#fff"
-        android:layout_alignParentBottom="true"
-        android:text="@string/SMStoemergencycontact" />
+<Button
+    android:id="@+id/contactDonor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/buttondesign1"
+    android:backgroundTint="@color/colorPrimary"
+    android:textColor="#fff"
+    android:layout_alignParentBottom="true"
+    android:text="@string/SMStoemergencycontact" />
 </RelativeLayout>

@@ -2,12 +2,14 @@ package com.example.rahulraj.red_revolution;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,11 +38,21 @@ public class DonorList extends AppCompatActivity implements AdapterView.OnItemSe
     int j, k;
     boolean flag = false;
     String JSON,BG;
+    CheckInternet c1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        c1 = new CheckInternet(this);
+        boolean check = c1.checkInternet();
+        if (!check) {
+            Intent intent = new Intent(DonorList.this, NoInternet.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.donor_list);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Bundle bundle = getIntent().getExtras();
         JSON = bundle.getString("DonorJSON", "");
@@ -53,14 +65,20 @@ public class DonorList extends AppCompatActivity implements AdapterView.OnItemSe
         Search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = false;
-                j = 0;
-                String city1 = searchCity.getText().toString().trim();
-                if (!TextUtils.isEmpty(city1)) {
-                    SetDataCity setDataCity = new SetDataCity();
-                    setDataCity.execute(city1);
+                boolean check=c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(DonorList.this, NoInternet.class);
+                    startActivity(intent);
                 } else {
-                    Toast.makeText(DonorList.this, "Please enter a city", Toast.LENGTH_SHORT).show();
+                    flag = false;
+                    j = 0;
+                    String city1 = searchCity.getText().toString().trim();
+                    if (!TextUtils.isEmpty(city1)) {
+                        SetDataCity setDataCity = new SetDataCity();
+                        setDataCity.execute(city1);
+                    } else {
+                        Toast.makeText(DonorList.this, "Please enter a city", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -206,26 +224,38 @@ public class DonorList extends AppCompatActivity implements AdapterView.OnItemSe
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new AlertDialog.Builder(DonorList.this).
-                            setTitle(getResources().getString(R.string.SendSMS))
-                            .setMessage(getResources().getString(R.string.contact_donor))
-                            .setPositiveButton(R.string.YES, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    SmsManager smsManager = SmsManager.getDefault();
-                                    smsManager.sendTextMessage(phone[position], null, getResources().getString(R.string.Message), null, null);
-                                    Toast.makeText(DonorList.this, R.string.sms_sent_donor, Toast.LENGTH_LONG).show();
-                                }
-                            }).setNegativeButton(R.string.NO, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                    boolean check=c1.checkInternet();
+                    if (!check) {
+                        Intent intent = new Intent(DonorList.this, NoInternet.class);
+                        startActivity(intent);
+                    } else {
+                        new AlertDialog.Builder(DonorList.this).
+                                setTitle(getResources().getString(R.string.SendSMS))
+                                .setMessage(getResources().getString(R.string.contact_donor))
+                                .setPositiveButton(R.string.YES, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        SmsManager smsManager = SmsManager.getDefault();
+                                        smsManager.sendTextMessage(phone[position], null, getResources().getString(R.string.Message), null, null);
+                                        Toast.makeText(DonorList.this, R.string.sms_sent_donor, Toast.LENGTH_LONG).show();
+                                    }
+                                }).setNegativeButton(R.string.NO, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    }).show();
+                            }
+                        }).show();
+                    }
 
                 }
             });
             return v;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

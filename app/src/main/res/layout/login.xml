@@ -63,7 +63,7 @@
         android:layout_margin="10dp"
         android:background="@drawable/buttondesign1"
         android:backgroundTint="@color/colorAccent"
-        android:text="action_sign_in"
+        android:text="Sign in/साइन इन करें"
         android:textColor="@android:color/white"
         android:textStyle="bold" />
 
@@ -76,7 +76,7 @@
         android:layout_margin="10dp"
         android:background="@drawable/buttondesign1"
         android:backgroundTint="@android:color/darker_gray"
-        android:text="action_sign_up"
+        android:text="Sign Up/साइन अप करें"
         android:textColor="@android:color/white" />
 
     <RadioGroup
@@ -115,7 +115,7 @@
         android:layout_margin="10dp"
         android:background="@drawable/buttondesign1"
         android:backgroundTint="@color/colorPrimary"
-        android:text="I am in an Emergency"
+        android:text="@string/IaminanEmergency"
         android:textColor="#fff" />
 
 </RelativeLayout>

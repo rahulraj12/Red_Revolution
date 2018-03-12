@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -27,6 +28,7 @@ public class Offline extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.offline);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences mPrefs = getSharedPreferences("IDvalue", 0);
         currLati = Double.parseDouble(mPrefs.getString("Latitude", ""));
@@ -127,4 +129,10 @@ public class Offline extends AppCompatActivity {
             return v;
         }
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
+    }
+
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -27,11 +28,20 @@ public class Register extends AppCompatActivity {
     ProgressBar progressBar;
     String Email, Password, Cnfpassword;
     SharedPreferences sharedPreferences;
+    CheckInternet c1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        c1 = new CheckInternet(this);
+        boolean check = c1.checkInternet();
+        if (!check) {
+            Intent intent = new Intent(Register.this, NoInternet.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.register);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
@@ -56,54 +66,60 @@ public class Register extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                View view = getCurrentFocus();
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-                Email = email.getText().toString().trim();
-                Password = password.getText().toString().trim();
-                Cnfpassword = cnfpassword.getText().toString().trim();
-
-                if (TextUtils.isEmpty(Email)) {
-                    email.setError("Enter Email");
-                    progressBar.setVisibility(View.GONE);
-                    return;
-                }
-                if (TextUtils.isEmpty(Password)) {
-                    password.setError("Enter Password");
-                    progressBar.setVisibility(View.GONE);
-                    return;
-                }
-                if (TextUtils.isEmpty(Cnfpassword)) {
-                    cnfpassword.setError("Enter Password");
-                    progressBar.setVisibility(View.GONE);
-                    return;
-                }
-                sharedPreferences = getSharedPreferences("User_details", 0);
-                SharedPreferences.Editor e = sharedPreferences.edit();
-                e.putString("Email", Email);
-                e.putString("Password",Password);
-                e.putString("1",Email);
-                e.commit();
-                if (Password.equals(Cnfpassword)) {
-                    mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()) {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(Register.this, "Sign up unsuccessful", Toast.LENGTH_SHORT).show();
-                            } else {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(Register.this, "Successfully created account", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                boolean check = c1.checkInternet();
+                if (!check) {
+                    Intent intent = new Intent(Register.this, NoInternet.class);
+                    startActivity(intent);
                 } else {
-                    cnfpassword.setError("Passwords do not match");
-                    progressBar.setVisibility(View.GONE);
-                    return;
+                    progressBar.setVisibility(View.VISIBLE);
+                    View view = getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                    Email = email.getText().toString().trim();
+                    Password = password.getText().toString().trim();
+                    Cnfpassword = cnfpassword.getText().toString().trim();
+
+                    if (TextUtils.isEmpty(Email)) {
+                        email.setError("Enter Email");
+                        progressBar.setVisibility(View.GONE);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(Password)) {
+                        password.setError("Enter Password");
+                        progressBar.setVisibility(View.GONE);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(Cnfpassword)) {
+                        cnfpassword.setError("Enter Password");
+                        progressBar.setVisibility(View.GONE);
+                        return;
+                    }
+                    sharedPreferences = getSharedPreferences("User_details", 0);
+                    SharedPreferences.Editor e = sharedPreferences.edit();
+                    e.putString("Email", Email);
+                    e.putString("Password", Password);
+                    e.putString("1", Email);
+                    e.commit();
+                    if (Password.equals(Cnfpassword)) {
+                        mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (!task.isSuccessful()) {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(Register.this, "Sign up unsuccessful", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(Register.this, "Successfully created account", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } else {
+                        cnfpassword.setError("Passwords do not match");
+                        progressBar.setVisibility(View.GONE);
+                        return;
+                    }
                 }
             }
         });
@@ -145,4 +161,11 @@ public class Register extends AppCompatActivity {
                     }
                 });
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
+    }
+
 }
