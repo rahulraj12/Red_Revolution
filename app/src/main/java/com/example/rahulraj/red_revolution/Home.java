@@ -94,7 +94,7 @@ public class Home extends AppCompatActivity
 
                 if (!isConnected) {
                     Toast.makeText(Home.this, R.string.InternetError, Toast.LENGTH_SHORT).show();
-                    Intent i=new Intent(Home.this,Offline.class);
+                    Intent i=new Intent(Home.this,NoInternet.class);
                     startActivity(i); //to do back button handling
 
                 } else {
